@@ -1,10 +1,16 @@
+import { Link } from "react-router-dom";
 import AudioButton from "../components/AudioButton";
 import grammar from "../data/grammar.json";
 
 export default function Grammar() {
   return (
     <div>
-      <h1 className="mb-4 font-display text-3xl font-extrabold">Ngữ pháp</h1>
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+        <h1 className="font-display text-3xl font-extrabold">Ngữ pháp</h1>
+        <Link to="/quiz?type=grammar" className="btn btn-primary">
+          Làm bài tập điền chỗ trống
+        </Link>
+      </div>
       <div className="grid gap-3 md:grid-cols-2">
         {grammar.map((g) => (
           <div key={g.id} className="card p-4">

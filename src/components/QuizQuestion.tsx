@@ -37,6 +37,7 @@ export default function QuizQuestion({ q, onNext }: { q: Question; onNext: (corr
           );
         })}
       </div>
+      {picked && q.note && <p className="mt-3 rounded-xl bg-soft p-3 text-sm">{q.note}</p>}
       {picked && (
         <button onClick={() => onNext(picked === q.answer)} className="btn btn-primary mt-4">
           Tiếp

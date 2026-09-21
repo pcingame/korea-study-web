@@ -1,6 +1,8 @@
 import { Trophy } from "@phosphor-icons/react";
 import { useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import QuizQuestion from "../components/QuizQuestion";
+import exercises from "../data/grammar-exercises.json";
 import vocab from "../data/vocabulary.json";
 import type { Question, Vocab } from "../types";
 import { quizResult, useProgress } from "../utils/progress";
@@ -11,14 +13,16 @@ const TYPES = {
   "vi-ko": "Việt → Hàn",
   listen: "Nghe → chọn từ",
   fill: "Điền từ",
+  grammar: "Điền ngữ pháp",
 } as const;
 type Type = keyof typeof TYPES;
+type VocabType = Exclude<Type, "grammar">;
 const N = 10;
 
 // Chỉ điền từ khi từ xuất hiện nguyên dạng trong câu ví dụ; từ 1 âm tiết dễ trùng nghĩa khác (이, 일…) nên bỏ
 const fillable = (v: Vocab) => v.word.length > 1 && v.example.includes(v.word);
 
-function make(type: Type, v: Vocab): Question {
+function make(type: VocabType, v: Vocab): Question {
   const others = shuffle(vocab.filter((x) => x.id !== v.id)).slice(0, 3);
   const pick = (f: (x: Vocab) => string) => shuffle([v, ...others].map(f));
   switch (type) {
@@ -37,15 +41,20 @@ function make(type: Type, v: Vocab): Question {
   }
 }
 
+const build = (type: Type): Question[] =>
+  type === "grammar"
+    ? shuffle(exercises).slice(0, N).map((e) => ({ prompt: `${e.sentence}  (${e.vi})`, options: shuffle(e.options), answer: e.answer, note: e.note }))
+    : shuffle(type === "fill" ? vocab.filter(fillable) : vocab).slice(0, N).map((v) => make(type, v));
+
 export default function Quiz() {
-  const [qs, setQs] = useState<Question[] | null>(null);
+  const [params] = useSearchParams(); // /quiz?type=grammar mở thẳng bài tập ngữ pháp
+  const [qs, setQs] = useState<Question[] | null>(() => (params.get("type") === "grammar" ? build("grammar") : null));
   const [n, setN] = useState(0);
   const [score, setScore] = useState(0);
   const [, update] = useProgress();
 
   const start = (type: Type) => {
-    const pool = type === "fill" ? vocab.filter(fillable) : vocab;
-    setQs(shuffle(pool).slice(0, N).map((v) => make(type, v)));
+    setQs(build(type));
     setN(0);
     setScore(0);
   };
