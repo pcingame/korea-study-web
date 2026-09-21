@@ -1,18 +1,22 @@
 import { MagnifyingGlass } from "@phosphor-icons/react";
 import { useState } from "react";
+import UnitFilter from "../components/UnitFilter";
 import VocabularyCard from "../components/VocabularyCard";
 import vocab from "../data/vocabulary.json";
+import { inUnit, useUnit } from "../utils/unit";
 
 const POS = [...new Set(vocab.map((v) => v.partOfSpeech))];
 
 export default function Vocabulary() {
   const [q, setQ] = useState("");
   const [pos, setPos] = useState("");
+  const [unit, setUnit] = useUnit();
   const s = q.trim().toLowerCase();
-  const list = vocab.filter((v) => (!pos || v.partOfSpeech === pos) && (!s || [v.word, v.reading, v.meaning].some((x) => x.toLowerCase().includes(s))));
+  const list = vocab.filter((v) => inUnit(v, unit) && (!pos || v.partOfSpeech === pos) && (!s || [v.word, v.reading, v.meaning].some((x) => x.toLowerCase().includes(s))));
   return (
     <div>
-      <h1 className="mb-4 font-display text-3xl font-extrabold">Từ vựng ({vocab.length})</h1>
+      <h1 className="mb-4 font-display text-3xl font-extrabold">Từ vựng ({list.length})</h1>
+      <UnitFilter value={unit} onChange={setUnit} />
       <label className="relative mb-4 block">
         <span className="sr-only">Tìm từ vựng</span>
         <MagnifyingGlass size={20} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted" />

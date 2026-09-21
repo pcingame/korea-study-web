@@ -1,18 +1,22 @@
 import { ArrowLeft, ArrowRight, CheckCircle, XCircle } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
 import FlashCard from "../components/FlashCard";
+import UnitFilter from "../components/UnitFilter";
 import ProgressBar from "../components/ProgressBar";
 import vocab from "../data/vocabulary.json";
 import { master, useProgress } from "../utils/progress";
+import { inUnit, useUnit } from "../utils/unit";
 
 export default function Flashcard() {
   const [i, setI] = useState(0);
   const [flipped, setFlipped] = useState(false);
   const [p, update] = useProgress();
-  const v = vocab[i];
+  const [unit, setUnit] = useUnit();
+  const deck = vocab.filter((x) => inUnit(x, unit));
+  const v = deck[i];
 
   const go = (d: number) => {
-    setI((i + d + vocab.length) % vocab.length);
+    setI((i + d + deck.length) % deck.length);
     setFlipped(false);
   };
   const mark = (yes: boolean) => {
@@ -36,9 +40,17 @@ export default function Flashcard() {
 
   return (
     <div className="mx-auto max-w-md">
+      <UnitFilter
+        value={unit}
+        onChange={(u) => {
+          setUnit(u);
+          setI(0);
+          setFlipped(false);
+        }}
+      />
       <div className="mb-2 flex min-h-6 justify-between text-sm text-muted">
         <span>
-          {i + 1}/{vocab.length}
+          {i + 1}/{deck.length}
         </span>
         {p.masteredWords.includes(v.id) && (
           <span className="inline-flex items-center gap-1 text-ok">
@@ -46,7 +58,7 @@ export default function Flashcard() {
           </span>
         )}
       </div>
-      <ProgressBar value={i + 1} max={vocab.length} />
+      <ProgressBar value={i + 1} max={deck.length} />
       <div className="mt-4">
         <FlashCard key={v.id} v={v} flipped={flipped} onFlip={() => setFlipped(!flipped)} />
       </div>

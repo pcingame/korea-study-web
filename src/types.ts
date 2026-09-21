@@ -1,5 +1,6 @@
 export type Vocab = {
   id: number;
+  unit?: number;
   word: string;
   reading: string;
   meaning: string;
@@ -10,6 +11,7 @@ export type Vocab = {
 
 export type Grammar = {
   id: number;
+  unit?: number;
   title: string;
   level: string;
   explanation: string;

@@ -3,12 +3,14 @@ import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import ProgressBar from "../components/ProgressBar";
 import QuizQuestion from "../components/QuizQuestion";
+import UnitFilter from "../components/UnitFilter";
 import exercises from "../data/grammar-exercises.json";
 import hangul from "../data/hangul.json";
 import vocab from "../data/vocabulary.json";
 import type { Question, Vocab } from "../types";
 import { quizResult, useProgress } from "../utils/progress";
 import { shuffle } from "../utils/shuffle";
+import { inUnit, useUnit, type Unit } from "../utils/unit";
 
 const TYPES = {
   "ko-vi": "Hàn → Việt",
@@ -131,9 +133,9 @@ function makeWord(v: Vocab): Question {
   };
 }
 
-const build = (type: Type): Question[] =>
+const build = (type: Type, unit: Unit): Question[] =>
   type === "hword"
-    ? shuffle(singleWords).slice(0, N).map(makeWord)
+    ? shuffle(singleWords.filter((v) => inUnit(v, unit))).slice(0, N).map(makeWord)
     : isHangul(type)
     ? shuffle(
         type === "hpatchim"
@@ -144,20 +146,23 @@ const build = (type: Type): Question[] =>
         .map((e) => makeHangul(type, e.it, e.items))
     : isGrammar(type)
     ? shuffle(exercises).slice(0, N).map((e) => makeGrammar(type, e))
-    : shuffle(type === "fill" ? vocab.filter(fillable) : vocab).slice(0, N).map((v) => make(type, v));
+    : shuffle((type === "fill" ? vocab.filter(fillable) : vocab).filter((v) => inUnit(v, unit)))
+        .slice(0, N)
+        .map((v) => make(type, v));
 
 export default function Quiz() {
+  const [unit, setUnit] = useUnit();
   const [params] = useSearchParams(); // /quiz?type=glisten mở thẳng một dạng bài
   const [qs, setQs] = useState<Question[] | null>(() => {
     const t = params.get("type");
-    return t && t in TYPES ? build(t as Type) : null;
+    return t && t in TYPES ? build(t as Type, unit) : null;
   });
   const [n, setN] = useState(0);
   const [score, setScore] = useState(0);
   const [, update] = useProgress();
 
   const start = (type: Type) => {
-    setQs(build(type));
+    setQs(build(type, unit));
     setN(0);
     setScore(0);
   };
@@ -173,6 +178,8 @@ export default function Quiz() {
     return (
       <div>
         <h1 className="mb-4 font-display text-3xl font-extrabold">Quiz</h1>
+        <UnitFilter value={unit} onChange={setUnit} />
+        <p className="-mt-2 mb-4 text-xs text-muted">Bộ lọc bài áp dụng cho bài tập từ vựng; bài tập ngữ pháp và Hangul dùng chung toàn bộ.</p>
         {GROUPS.map(([title, types]) => (
           <section key={title} className="mb-6">
             <h2 className="mb-2 font-bold text-muted">{title}</h2>
