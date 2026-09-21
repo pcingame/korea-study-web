@@ -1,5 +1,6 @@
 import { MagnifyingGlass } from "@phosphor-icons/react";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import UnitFilter from "../components/UnitFilter";
 import VocabularyCard from "../components/VocabularyCard";
 import vocab from "../data/vocabulary.json";
@@ -15,7 +16,12 @@ export default function Vocabulary() {
   const list = vocab.filter((v) => inUnit(v, unit) && (!pos || v.partOfSpeech === pos) && (!s || [v.word, v.reading, v.meaning].some((x) => x.toLowerCase().includes(s))));
   return (
     <div>
-      <h1 className="mb-4 font-display text-3xl font-extrabold">Từ vựng ({list.length})</h1>
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+        <h1 className="font-display text-3xl font-extrabold">Từ vựng ({list.length})</h1>
+        <Link to="/quiz" className="btn btn-primary">
+          Làm bài tập từ vựng
+        </Link>
+      </div>
       <UnitFilter value={unit} onChange={setUnit} />
       <label className="relative mb-4 block">
         <span className="sr-only">Tìm từ vựng</span>

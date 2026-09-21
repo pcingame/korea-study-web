@@ -29,4 +29,4 @@ export type Progress = {
   lastStudyDate: string;
 };
 
-export type Question = { prompt: string; audio?: string; options: string[]; answer: string; note?: string };
+export type Question = { prompt: string; audio?: string; options: string[]; answer: string; note?: string; typed?: boolean };

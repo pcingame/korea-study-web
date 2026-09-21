@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import ProgressBar from "../components/ProgressBar";
 import QuizQuestion from "../components/QuizQuestion";
+import TypeQuestion from "../components/TypeQuestion";
 import UnitFilter from "../components/UnitFilter";
 import exercises from "../data/grammar-exercises.json";
 import hangul from "../data/hangul.json";
@@ -17,6 +18,8 @@ const TYPES = {
   "vi-ko": "Việt → Hàn",
   listen: "Nghe → chọn từ",
   fill: "Điền từ",
+  vtype: "Gõ từ (Việt → Hàn)",
+  ltype: "Nghe → gõ từ",
   grammar: "Điền ngữ pháp",
   glisten: "Nghe → điền ngữ pháp",
   gmean: "Nghe câu → chọn nghĩa",
@@ -28,7 +31,7 @@ const TYPES = {
 type Type = keyof typeof TYPES;
 type GrammarType = "grammar" | "glisten" | "gmean";
 const GROUPS: [string, Type[]][] = [
-  ["Từ vựng", ["ko-vi", "vi-ko", "listen", "fill"]],
+  ["Từ vựng", ["ko-vi", "vi-ko", "listen", "fill", "vtype", "ltype"]],
   ["Ngữ pháp", ["grammar", "glisten", "gmean"]],
   ["Hangul và phát âm", ["hlisten", "hread", "hpatchim", "hword"]],
 ];
@@ -41,8 +44,14 @@ const N = 10;
 // Chỉ điền từ khi từ xuất hiện nguyên dạng trong câu ví dụ; từ 1 âm tiết dễ trùng nghĩa khác (이, 일…) nên bỏ
 const fillable = (v: Vocab) => v.word.length > 1 && v.example.includes(v.word);
 
-function make(type: VocabType, v: Vocab): Question {
-  const others = shuffle(vocab.filter((x) => x.id !== v.id)).slice(0, 3);
+// Đáp án nhiễu lấy cùng bài đang lọc cho sát chủ đề; bài quá ít từ thì lấy từ toàn bộ
+const distractorPool = (unit: Unit) => {
+  const p = vocab.filter((v) => inUnit(v, unit));
+  return p.length >= 8 ? p : vocab;
+};
+
+function make(type: VocabType, v: Vocab, pool: Vocab[]): Question {
+  const others = shuffle(pool.filter((x) => x.id !== v.id)).slice(0, 3);
   const pick = (f: (x: Vocab) => string) => shuffle([v, ...others].map(f));
   switch (type) {
     case "ko-vi":
@@ -57,6 +66,16 @@ function make(type: VocabType, v: Vocab): Question {
         options: pick((x) => x.word),
         answer: v.word,
       };
+    case "vtype":
+      return {
+        prompt: `Gõ từ tiếng Hàn có nghĩa “${v.meaning}” (${v.word.replace(/\s/g, "").length} âm tiết)`,
+        options: [],
+        answer: v.word,
+        note: `${v.word} (${v.reading})`,
+        typed: true,
+      };
+    case "ltype":
+      return { prompt: "Nghe và gõ lại từ bạn nghe được", audio: v.word, options: [], answer: v.word, note: `${v.word} (${v.reading}) = ${v.meaning}`, typed: true };
   }
 }
 
@@ -117,9 +136,9 @@ function distance(a: string[], b: string[]) {
 }
 const singleWords = vocab.filter((v) => !v.word.includes(" "));
 
-function makeWord(v: Vocab): Question {
+function makeWord(v: Vocab, pool: Vocab[]): Question {
   const a = jamo(v.word);
-  const near = shuffle(singleWords.filter((x) => x.id !== v.id))
+  const near = shuffle(pool.filter((x) => !x.word.includes(" ") && x.id !== v.id))
     .map((x) => ({ word: x.word, d: distance(a, jamo(x.word)) }))
     .sort((p, q) => p.d - q.d)
     .slice(0, 3)
@@ -133,9 +152,12 @@ function makeWord(v: Vocab): Question {
   };
 }
 
-const build = (type: Type, unit: Unit): Question[] =>
-  type === "hword"
-    ? shuffle(singleWords.filter((v) => inUnit(v, unit))).slice(0, N).map(makeWord)
+const build = (type: Type, unit: Unit): Question[] => {
+  const pool = distractorPool(unit);
+  return type === "hword"
+    ? shuffle(singleWords.filter((v) => inUnit(v, unit)))
+        .slice(0, N)
+        .map((v) => makeWord(v, pool))
     : isHangul(type)
     ? shuffle(
         type === "hpatchim"
@@ -150,7 +172,8 @@ const build = (type: Type, unit: Unit): Question[] =>
         .map((e) => makeGrammar(type, e))
     : shuffle((type === "fill" ? vocab.filter(fillable) : vocab).filter((v) => inUnit(v, unit)))
         .slice(0, N)
-        .map((v) => make(type, v));
+        .map((v) => make(type, v, pool));
+};
 
 export default function Quiz() {
   const [unit, setUnit] = useUnit();
@@ -218,7 +241,7 @@ export default function Quiz() {
       <div className="mb-4">
         <ProgressBar value={n} max={qs.length} />
       </div>
-      <QuizQuestion key={n} q={qs[n]} onNext={next} />
+      {qs[n].typed ? <TypeQuestion key={n} q={qs[n]} onNext={next} /> : <QuizQuestion key={n} q={qs[n]} onNext={next} />}
     </div>
   );
 }
