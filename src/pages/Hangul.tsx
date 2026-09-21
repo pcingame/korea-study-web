@@ -1,10 +1,17 @@
+import { Microphone } from "@phosphor-icons/react";
+import { Link } from "react-router-dom";
 import { speak } from "../components/AudioButton";
 import hangul from "../data/hangul.json";
 
 export default function Hangul() {
   return (
     <div>
-      <h1 className="mb-4 font-display text-3xl font-extrabold">Bảng chữ cái Hangul</h1>
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+        <h1 className="font-display text-3xl font-extrabold">Bảng chữ cái Hangul</h1>
+        <Link to="/pronunciation" className="btn btn-primary">
+          <Microphone size={20} weight="fill" /> Luyện phát âm
+        </Link>
+      </div>
       {hangul.map((g) => (
         <section key={g.title} className="mb-6">
           <h2 className="mb-2 font-bold text-muted">{g.title}</h2>

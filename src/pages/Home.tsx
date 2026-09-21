@@ -1,4 +1,4 @@
-import { BookOpenText, Cards, Exam, Flame, TextAa } from "@phosphor-icons/react";
+import { BookOpenText, Books, Cards, Exam, Flame, Microphone, TextAa } from "@phosphor-icons/react";
 import { Link } from "react-router-dom";
 import ProgressBar from "../components/ProgressBar";
 import vocab from "../data/vocabulary.json";
@@ -9,6 +9,8 @@ const TILES = [
   { to: "/flashcard", Icon: Cards, text: "Flashcard từ vựng" },
   { to: "/quiz", Icon: Exam, text: "Quiz 10 câu" },
   { to: "/grammar", Icon: BookOpenText, text: "Ngữ pháp" },
+  { to: "/vocabulary", Icon: Books, text: "Từ vựng" },
+  { to: "/pronunciation", Icon: Microphone, text: "Luyện phát âm" },
 ];
 
 export default function Home() {

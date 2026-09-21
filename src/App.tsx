@@ -1,10 +1,11 @@
-import { BookOpenText, Books, Cards, ChartBar, Exam, House, TextAa } from "@phosphor-icons/react";
+import { BookOpenText, Books, Cards, ChartBar, Exam, House, Microphone, TextAa } from "@phosphor-icons/react";
 import { NavLink, Route, Routes } from "react-router-dom";
 import Flashcard from "./pages/Flashcard";
 import Grammar from "./pages/Grammar";
 import Hangul from "./pages/Hangul";
 import Home from "./pages/Home";
 import Progress from "./pages/Progress";
+import Pronunciation from "./pages/Pronunciation";
 import Quiz from "./pages/Quiz";
 import Vocabulary from "./pages/Vocabulary";
 
@@ -16,6 +17,7 @@ const NAV = [
   { to: "/grammar", Icon: BookOpenText, text: "Ngữ pháp", mobile: true },
   { to: "/flashcard", Icon: Cards, text: "Flashcard", mobile: true },
   { to: "/quiz", Icon: Exam, text: "Quiz", mobile: true },
+  { to: "/pronunciation", Icon: Microphone, text: "Phát âm", mobile: false },
   { to: "/progress", Icon: ChartBar, text: "Tiến độ", mobile: false },
 ];
 
@@ -58,6 +60,7 @@ export default function App() {
           <Route path="/grammar" element={<Grammar />} />
           <Route path="/flashcard" element={<Flashcard />} />
           <Route path="/quiz" element={<Quiz />} />
+          <Route path="/pronunciation" element={<Pronunciation />} />
           <Route path="/progress" element={<Progress />} />
         </Routes>
       </main>
