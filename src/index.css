@@ -45,8 +45,9 @@
   --color-ok-bg: var(--ok-bg);
   --color-bad: var(--bad);
   --color-bad-bg: var(--bad-bg);
-  --font-display: "Nunito", "Noto Sans KR", sans-serif;
-  --font-sans: "DM Sans", "Noto Sans KR", sans-serif;
+  /* Be Vietnam Pro có đủ dấu tiếng Việt; chữ Hàn dùng Noto Sans KR */
+  --font-display: "Be Vietnam Pro", "Noto Sans KR", sans-serif;
+  --font-sans: "Be Vietnam Pro", "Noto Sans KR", sans-serif;
 }
 
 @layer base {

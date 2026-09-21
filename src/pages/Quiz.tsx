@@ -145,7 +145,9 @@ const build = (type: Type, unit: Unit): Question[] =>
         .slice(0, N)
         .map((e) => makeHangul(type, e.it, e.items))
     : isGrammar(type)
-    ? shuffle(exercises).slice(0, N).map((e) => makeGrammar(type, e))
+    ? shuffle(exercises.filter((e) => inUnit(e, unit)))
+        .slice(0, N)
+        .map((e) => makeGrammar(type, e))
     : shuffle((type === "fill" ? vocab.filter(fillable) : vocab).filter((v) => inUnit(v, unit)))
         .slice(0, N)
         .map((v) => make(type, v));
@@ -179,7 +181,7 @@ export default function Quiz() {
       <div>
         <h1 className="mb-4 font-display text-3xl font-extrabold">Quiz</h1>
         <UnitFilter value={unit} onChange={setUnit} />
-        <p className="-mt-2 mb-4 text-xs text-muted">Bộ lọc bài áp dụng cho bài tập từ vựng; bài tập ngữ pháp và Hangul dùng chung toàn bộ.</p>
+        <p className="-mt-2 mb-4 text-xs text-muted">Bộ lọc bài áp dụng cho bài tập từ vựng và ngữ pháp. Bài tập Hangul dùng chung toàn bộ.</p>
         {GROUPS.map(([title, types]) => (
           <section key={title} className="mb-6">
             <h2 className="mb-2 font-bold text-muted">{title}</h2>
