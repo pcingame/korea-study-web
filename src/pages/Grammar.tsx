@@ -7,9 +7,14 @@ export default function Grammar() {
     <div>
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <h1 className="font-display text-3xl font-extrabold">Ngữ pháp</h1>
-        <Link to="/quiz?type=grammar" className="btn btn-primary">
-          Làm bài tập điền chỗ trống
-        </Link>
+        <div className="flex flex-wrap gap-2">
+          <Link to="/quiz?type=grammar" className="btn btn-primary">
+            Bài tập điền chỗ trống
+          </Link>
+          <Link to="/quiz?type=glisten" className="btn">
+            Bài tập nghe
+          </Link>
+        </div>
       </div>
       <div className="grid gap-3 md:grid-cols-2">
         {grammar.map((g) => (

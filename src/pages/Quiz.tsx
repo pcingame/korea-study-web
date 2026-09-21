@@ -14,9 +14,13 @@ const TYPES = {
   listen: "Nghe → chọn từ",
   fill: "Điền từ",
   grammar: "Điền ngữ pháp",
+  glisten: "Nghe → điền ngữ pháp",
+  gmean: "Nghe câu → chọn nghĩa",
 } as const;
 type Type = keyof typeof TYPES;
-type VocabType = Exclude<Type, "grammar">;
+type GrammarType = "grammar" | "glisten" | "gmean";
+type VocabType = Exclude<Type, GrammarType>;
+const isGrammar = (t: Type): t is GrammarType => t === "grammar" || t === "glisten" || t === "gmean";
 const N = 10;
 
 // Chỉ điền từ khi từ xuất hiện nguyên dạng trong câu ví dụ; từ 1 âm tiết dễ trùng nghĩa khác (이, 일…) nên bỏ
@@ -41,14 +45,35 @@ function make(type: VocabType, v: Vocab): Question {
   }
 }
 
+type Ex = (typeof exercises)[number];
+const full = (e: Ex) => e.sentence.replace(/_+/, e.answer); // câu hoàn chỉnh để đọc
+
+function makeGrammar(type: GrammarType, e: Ex): Question {
+  const note = type === "grammar" ? e.note : `${full(e)} — ${e.note}`;
+  if (type === "gmean") {
+    const others = [...new Set(exercises.map((x) => x.vi).filter((v) => v !== e.vi))];
+    return { prompt: "Nghe câu và chọn nghĩa đúng", audio: full(e), options: shuffle([e.vi, ...shuffle(others).slice(0, 3)]), answer: e.vi, note };
+  }
+  return {
+    prompt: type === "grammar" ? `${e.sentence}  (${e.vi})` : `Nghe và chọn phần còn thiếu: ${e.sentence}`,
+    audio: type === "glisten" ? full(e) : undefined,
+    options: shuffle(e.options),
+    answer: e.answer,
+    note,
+  };
+}
+
 const build = (type: Type): Question[] =>
-  type === "grammar"
-    ? shuffle(exercises).slice(0, N).map((e) => ({ prompt: `${e.sentence}  (${e.vi})`, options: shuffle(e.options), answer: e.answer, note: e.note }))
+  isGrammar(type)
+    ? shuffle(exercises).slice(0, N).map((e) => makeGrammar(type, e))
     : shuffle(type === "fill" ? vocab.filter(fillable) : vocab).slice(0, N).map((v) => make(type, v));
 
 export default function Quiz() {
-  const [params] = useSearchParams(); // /quiz?type=grammar mở thẳng bài tập ngữ pháp
-  const [qs, setQs] = useState<Question[] | null>(() => (params.get("type") === "grammar" ? build("grammar") : null));
+  const [params] = useSearchParams(); // /quiz?type=glisten mở thẳng một dạng bài
+  const [qs, setQs] = useState<Question[] | null>(() => {
+    const t = params.get("type");
+    return t && t in TYPES ? build(t as Type) : null;
+  });
   const [n, setN] = useState(0);
   const [score, setScore] = useState(0);
   const [, update] = useProgress();
