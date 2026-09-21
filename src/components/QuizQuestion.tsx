@@ -10,7 +10,9 @@ export default function QuizQuestion({ q, onNext }: { q: Question; onNext: (corr
   const pick = (o: string) => {
     if (picked) return;
     setPicked(o);
-    if (o === q.answer) speak(q.answer);
+    // Chỉ đọc khi là chữ Hàn có nghĩa (đáp án tiếng Việt hay phiên âm La-tinh thì bỏ qua)
+    const t = q.audio ?? q.answer;
+    if (o === q.answer && /[가-힣]/.test(t)) speak(t);
   };
 
   return (

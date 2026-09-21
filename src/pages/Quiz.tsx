@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import QuizQuestion from "../components/QuizQuestion";
 import exercises from "../data/grammar-exercises.json";
+import hangul from "../data/hangul.json";
 import vocab from "../data/vocabulary.json";
 import type { Question, Vocab } from "../types";
 import { quizResult, useProgress } from "../utils/progress";
@@ -16,10 +17,14 @@ const TYPES = {
   grammar: "Điền ngữ pháp",
   glisten: "Nghe → điền ngữ pháp",
   gmean: "Nghe câu → chọn nghĩa",
+  hread: "Hangul: chữ → cách đọc",
+  hlisten: "Hangul: nghe → chọn chữ",
+  hpatchim: "Patchim: nghe → âm cuối",
 } as const;
 type Type = keyof typeof TYPES;
 type GrammarType = "grammar" | "glisten" | "gmean";
-type VocabType = Exclude<Type, GrammarType>;
+type HangulType = "hread" | "hlisten" | "hpatchim";
+type VocabType = Exclude<Type, GrammarType | HangulType>;
 const isGrammar = (t: Type): t is GrammarType => t === "grammar" || t === "glisten" || t === "gmean";
 const N = 10;
 
@@ -63,8 +68,42 @@ function makeGrammar(type: GrammarType, e: Ex): Question {
   };
 }
 
+const isHangul = (t: Type): t is HangulType => t === "hread" || t === "hlisten" || t === "hpatchim";
+
+type HItem = (typeof hangul)[number]["items"][number];
+const patchim = hangul.find((g) => g.title.startsWith("Patchim"))!.items;
+const letters = hangul.filter((g) => !g.title.startsWith("Patchim"));
+const sound = (x: HItem) => x.r.split(" · ")[0]; // patchim: "k · 책 sách" → "k"
+
+// Nguyên âm ghép (ㅐ/ㅔ, ㅙ/ㅚ/ㅞ…) nghe giống nhau nên không đưa vào bài nghe
+const listenable = letters.filter((g) => g.title !== "Nguyên âm ghép");
+
+// items = nhóm chứa chữ đó, dùng để lấy đáp án nhiễu cùng loại
+function makeHangul(type: HangulType, it: HItem, items: HItem[]): Question {
+  const opts = shuffle([it, ...shuffle(items.filter((x) => x !== it)).slice(0, 3)]);
+  if (type === "hpatchim")
+    return {
+      prompt: `Từ "${it.say}": âm cuối (patchim) đọc là gì?`,
+      audio: it.say,
+      options: opts.map(sound),
+      answer: sound(it),
+      note: `${it.say}: patchim ${it.c} đọc là "${sound(it)}".`,
+    };
+  if (type === "hlisten")
+    return { prompt: "Nghe và chọn chữ đúng", audio: it.say, options: opts.map((x) => x.c), answer: it.c, note: `${it.c} đọc là ${it.r} (${it.say}).` };
+  return { prompt: `Chữ "${it.c}" đọc là gì?`, options: opts.map((x) => x.r), answer: it.r, note: `${it.c} = ${it.say} (${it.r}).` };
+}
+
 const build = (type: Type): Question[] =>
-  isGrammar(type)
+  isHangul(type)
+    ? shuffle(
+        type === "hpatchim"
+          ? patchim.map((it) => ({ it, items: patchim }))
+          : (type === "hlisten" ? listenable : letters).flatMap((g) => g.items.map((it) => ({ it, items: g.items }))),
+      )
+        .slice(0, N)
+        .map((e) => makeHangul(type, e.it, e.items))
+    : isGrammar(type)
     ? shuffle(exercises).slice(0, N).map((e) => makeGrammar(type, e))
     : shuffle(type === "fill" ? vocab.filter(fillable) : vocab).slice(0, N).map((v) => make(type, v));
 

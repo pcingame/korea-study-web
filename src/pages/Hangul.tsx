@@ -8,9 +8,14 @@ export default function Hangul() {
     <div>
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <h1 className="font-display text-3xl font-extrabold">Bảng chữ cái Hangul</h1>
-        <Link to="/pronunciation" className="btn btn-primary">
-          <Microphone size={20} weight="fill" /> Luyện phát âm
-        </Link>
+        <div className="flex flex-wrap gap-2">
+          <Link to="/quiz?type=hread" className="btn btn-primary">
+            Bài tập chọn đáp án
+          </Link>
+          <Link to="/pronunciation" className="btn">
+            <Microphone size={20} weight="fill" /> Luyện phát âm
+          </Link>
+        </div>
       </div>
       {hangul.map((g) => (
         <section key={g.title} className="mb-6">
