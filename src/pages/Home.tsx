@@ -1,31 +1,40 @@
+import { BookOpenText, Cards, Exam, Flame, TextAa } from "@phosphor-icons/react";
 import { Link } from "react-router-dom";
 import ProgressBar from "../components/ProgressBar";
 import vocab from "../data/vocabulary.json";
 import { currentStreak, useProgress } from "../utils/progress";
 
+const TILES = [
+  { to: "/hangul", Icon: TextAa, text: "Học Hangul" },
+  { to: "/flashcard", Icon: Cards, text: "Flashcard từ vựng" },
+  { to: "/quiz", Icon: Exam, text: "Quiz 10 câu" },
+  { to: "/grammar", Icon: BookOpenText, text: "Ngữ pháp" },
+];
+
 export default function Home() {
   const [p] = useProgress();
-  const tiles = [
-    { to: "/hangul", icon: "🔤", text: "Học Hangul" },
-    { to: "/flashcard", icon: "📚", text: "Flashcard từ vựng" },
-    { to: "/quiz", icon: "📝", text: "Quiz 10 câu" },
-    { to: "/grammar", icon: "📖", text: "Ngữ pháp" },
-  ];
   return (
     <div>
-      <h1 className="mb-4 text-2xl font-bold">Hôm nay học gì?</h1>
-      <div className="mb-6 rounded-xl bg-white p-4 shadow-sm">
-        <div className="mb-2 flex justify-between text-sm">
-          <span>Đã thuộc {p.masteredWords.length}/{vocab.length} từ</span>
-          <span>🔥 {currentStreak(p)} ngày</span>
+      <h1 className="mb-4 font-display text-3xl font-extrabold">Hôm nay học gì?</h1>
+      <Link to="/progress" className="card mb-4 block p-4 transition duration-150 hover:bg-soft">
+        <div className="mb-3 flex items-center justify-between">
+          <span className="font-medium">
+            Đã thuộc {p.masteredWords.length}/{vocab.length} từ
+          </span>
+          <span className="inline-flex items-center gap-1 font-bold text-primary">
+            <Flame size={22} weight="fill" />
+            {currentStreak(p)} ngày
+          </span>
         </div>
         <ProgressBar value={p.masteredWords.length} max={vocab.length} />
-      </div>
+      </Link>
       <div className="grid grid-cols-2 gap-3">
-        {tiles.map((t) => (
-          <Link key={t.to} to={t.to} className="rounded-xl bg-white p-6 text-center shadow-sm hover:bg-indigo-50">
-            <div className="text-3xl">{t.icon}</div>
-            <div className="mt-2">{t.text}</div>
+        {TILES.map(({ to, Icon, text }) => (
+          <Link key={to} to={to} className="card flex flex-col items-center gap-3 p-6 text-center font-medium transition duration-150 hover:bg-soft active:scale-95">
+            <span className="flex size-14 items-center justify-center rounded-full bg-soft text-primary">
+              <Icon size={30} weight="duotone" />
+            </span>
+            {text}
           </Link>
         ))}
       </div>

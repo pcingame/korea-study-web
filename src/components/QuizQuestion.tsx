@@ -1,3 +1,4 @@
+import { CheckCircle, XCircle } from "@phosphor-icons/react";
 import { useState } from "react";
 import type { Question } from "../types";
 import AudioButton, { speak } from "./AudioButton";
@@ -14,23 +15,31 @@ export default function QuizQuestion({ q, onNext }: { q: Question; onNext: (corr
 
   return (
     <div>
-      <div className="mb-4 flex items-center gap-2 text-xl">
+      <div className="mb-4 flex items-center gap-3 text-xl font-medium">
         <span>{q.prompt}</span>
         {q.audio && <AudioButton text={q.audio} />}
       </div>
       <div className="grid gap-2">
         {q.options.map((o) => {
-          const state = !picked ? "bg-white hover:bg-slate-100" : o === q.answer ? "bg-green-100" : o === picked ? "bg-red-100" : "bg-white";
+          const right = picked && o === q.answer;
+          const wrong = picked && o === picked && o !== q.answer;
           return (
-            <button key={o} onClick={() => pick(o)} className={`rounded-xl border border-slate-300 p-3 text-left ${state}`}>
-              {o}
+            <button
+              key={o}
+              onClick={() => pick(o)}
+              disabled={!!picked}
+              className={`btn justify-between text-left disabled:cursor-default ${right ? "border-ok bg-ok-bg" : ""} ${wrong ? "border-bad bg-bad-bg" : ""}`}
+            >
+              <span>{o}</span>
+              {right && <CheckCircle size={22} weight="fill" className="text-ok" aria-label="Đúng" />}
+              {wrong && <XCircle size={22} weight="fill" className="text-bad" aria-label="Sai" />}
             </button>
           );
         })}
       </div>
       {picked && (
-        <button onClick={() => onNext(picked === q.answer)} className="mt-4 rounded-xl bg-indigo-600 px-4 py-2 text-white">
-          Tiếp →
+        <button onClick={() => onNext(picked === q.answer)} className="btn btn-primary mt-4">
+          Tiếp
         </button>
       )}
     </div>

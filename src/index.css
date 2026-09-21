@@ -1,1 +1,79 @@
 @import "tailwindcss";
+
+/* Semantic tokens: đổi màu ở đây, không hardcode trong component */
+:root {
+  --bg: #eef2ff;
+  --surface: #ffffff;
+  --fg: #312e81;
+  --muted: #4e5484;
+  --border: #c7d2fe;
+  --soft: #e0e7ff;
+  --primary: #4f46e5;
+  --on-primary: #ffffff;
+  --ok: #15803d;
+  --ok-bg: #dcfce7;
+  --bad: #b91c1c;
+  --bad-bg: #fee2e2;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0f1020;
+    --surface: #1b1c33;
+    --fg: #e0e7ff;
+    --muted: #a5acd6;
+    --border: #33365c;
+    --soft: #2a2c55;
+    --primary: #818cf8;
+    --on-primary: #0f1020;
+    --ok: #4ade80;
+    --ok-bg: #14532d;
+    --bad: #fca5a5;
+    --bad-bg: #7f1d1d;
+  }
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-fg: var(--fg);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --color-soft: var(--soft);
+  --color-primary: var(--primary);
+  --color-on-primary: var(--on-primary);
+  --color-ok: var(--ok);
+  --color-ok-bg: var(--ok-bg);
+  --color-bad: var(--bad);
+  --color-bad-bg: var(--bad-bg);
+  --font-display: "Nunito", "Noto Sans KR", sans-serif;
+  --font-sans: "DM Sans", "Noto Sans KR", sans-serif;
+}
+
+@layer base {
+  body {
+    @apply bg-bg font-sans text-fg antialiased;
+  }
+  :focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+  }
+}
+
+@layer components {
+  .card {
+    @apply rounded-2xl border border-border bg-surface shadow-sm;
+  }
+  .btn {
+    @apply inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-xl border border-border bg-surface px-4 font-medium transition duration-150 hover:bg-soft active:scale-95;
+  }
+  .btn-primary {
+    @apply border-transparent bg-primary text-on-primary hover:bg-primary hover:opacity-90;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    transition: none !important;
+    animation: none !important;
+  }
+}

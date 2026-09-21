@@ -1,3 +1,4 @@
+import { Trophy } from "@phosphor-icons/react";
 import { useState } from "react";
 import QuizQuestion from "../components/QuizQuestion";
 import vocab from "../data/vocabulary.json";
@@ -59,10 +60,10 @@ export default function Quiz() {
   if (!qs)
     return (
       <div>
-        <h1 className="mb-4 text-2xl font-bold">Quiz</h1>
+        <h1 className="mb-4 font-display text-3xl font-extrabold">Quiz</h1>
         <div className="grid gap-2 sm:grid-cols-2">
           {(Object.keys(TYPES) as Type[]).map((t) => (
-            <button key={t} onClick={() => start(t)} className="rounded-xl bg-white p-4 text-left shadow-sm hover:bg-indigo-50">
+            <button key={t} onClick={() => start(t)} className="card cursor-pointer p-4 text-left font-medium transition duration-150 hover:bg-soft active:scale-95">
               {TYPES[t]}
             </button>
           ))}
@@ -72,11 +73,12 @@ export default function Quiz() {
 
   if (n >= qs.length)
     return (
-      <div className="text-center">
-        <div className="text-2xl font-bold">
+      <div className="flex flex-col items-center gap-2 text-center">
+        <Trophy size={64} weight="duotone" className="text-primary" />
+        <div className="font-display text-3xl font-extrabold">
           Kết quả: {score}/{qs.length}
         </div>
-        <button onClick={() => setQs(null)} className="mt-4 rounded-xl bg-indigo-600 px-4 py-2 text-white">
+        <button onClick={() => setQs(null)} className="btn btn-primary mt-4">
           Làm lại
         </button>
       </div>
@@ -84,7 +86,7 @@ export default function Quiz() {
 
   return (
     <div className="mx-auto max-w-md">
-      <div className="mb-2 text-sm text-slate-500">
+      <div className="mb-2 text-sm text-muted">
         Câu {n + 1}/{qs.length}
       </div>
       <QuizQuestion key={n} q={qs[n]} onNext={next} />

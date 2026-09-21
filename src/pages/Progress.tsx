@@ -1,3 +1,4 @@
+import { Flame } from "@phosphor-icons/react";
 import ProgressBar from "../components/ProgressBar";
 import vocab from "../data/vocabulary.json";
 import { currentStreak, useProgress } from "../utils/progress";
@@ -12,22 +13,27 @@ export default function Progress() {
     ["Đã thuộc", `${mastered} từ`],
     ["Đang học", `${learning} từ`],
     ["Quiz trung bình", p.quizTotal ? `${avg}%` : "—"],
-    ["Streak", `🔥 ${currentStreak(p)} ngày`],
   ];
   return (
     <div className="mx-auto max-w-md">
-      <h1 className="mb-4 text-2xl font-bold">Tiến độ học</h1>
-      <div className="rounded-xl bg-white p-4 shadow-sm">
+      <h1 className="mb-4 font-display text-3xl font-extrabold">Tiến độ học</h1>
+      <div className="card p-4">
         <ProgressBar value={mastered} max={vocab.length} />
-        <div className="mb-4 mt-1 text-sm text-slate-500">
+        <div className="mb-4 mt-2 text-sm text-muted">
           {mastered}/{vocab.length} từ đã thuộc
         </div>
         {rows.map(([k, v]) => (
-          <div key={k} className="flex justify-between border-t border-slate-100 py-2">
+          <div key={k} className="flex justify-between border-t border-border py-3">
             <span>{k}</span>
             <b>{v}</b>
           </div>
         ))}
+        <div className="flex items-center justify-between border-t border-border py-3">
+          <span>Streak</span>
+          <b className="inline-flex items-center gap-1 text-primary">
+            <Flame size={22} weight="fill" /> {currentStreak(p)} ngày
+          </b>
+        </div>
       </div>
     </div>
   );

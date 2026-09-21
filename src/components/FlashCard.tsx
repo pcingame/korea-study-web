@@ -4,19 +4,23 @@ import AudioButton from "./AudioButton";
 export default function FlashCard({ v, flipped, onFlip }: { v: Vocab; flipped: boolean; onFlip: () => void }) {
   return (
     <div
+      role="button"
+      tabIndex={0}
+      aria-label={flipped ? "Ẩn nghĩa" : "Xem nghĩa"}
       onClick={onFlip}
-      className="flex min-h-64 cursor-pointer select-none flex-col items-center justify-center gap-2 rounded-2xl bg-white p-6 text-center shadow"
+      onKeyDown={(e) => (e.key === " " || e.key === "Enter") && (e.preventDefault(), onFlip())}
+      className="card flex min-h-72 cursor-pointer select-none flex-col items-center justify-center gap-2 p-6 text-center transition duration-150 active:scale-[0.98]"
     >
-      <div className="text-5xl font-semibold">{v.word}</div>
-      <div className="text-slate-500">{v.reading}</div>
+      <div className="font-display text-6xl font-extrabold">{v.word}</div>
+      <div className="text-muted">{v.reading}</div>
       {flipped ? (
-        <>
-          <div className="mt-3 text-2xl">{v.meaning}</div>
+        <div className="mt-3 w-full rounded-xl bg-bg p-4">
+          <div className="text-2xl font-bold text-primary">{v.meaning}</div>
           <div className="mt-2">{v.example}</div>
-          <div className="text-sm text-slate-500">{v.translation}</div>
-        </>
+          <div className="text-sm text-muted">{v.translation}</div>
+        </div>
       ) : (
-        <div className="mt-6 text-sm text-slate-400">Nhấn để xem nghĩa</div>
+        <div className="mt-6 text-sm text-muted">Nhấn để xem nghĩa</div>
       )}
       <div className="mt-2">
         <AudioButton text={v.word} />

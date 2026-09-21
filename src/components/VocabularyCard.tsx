@@ -3,20 +3,21 @@ import AudioButton from "./AudioButton";
 
 export default function VocabularyCard({ v }: { v: Vocab }) {
   return (
-    <div className="rounded-xl bg-white p-4 shadow-sm">
+    <div className="card p-4">
       <div className="flex items-start justify-between gap-2">
         <div>
-          <span className="text-2xl font-semibold">{v.word}</span>
-          <span className="ml-2 text-slate-500">{v.reading}</span>
+          <div className="font-display text-3xl font-extrabold">{v.word}</div>
+          <div className="text-muted">{v.reading}</div>
         </div>
         <AudioButton text={v.word} />
       </div>
-      <div className="mt-1">
-        {v.meaning} <span className="text-xs text-slate-400">({v.partOfSpeech})</span>
+      <div className="mt-2 flex flex-wrap items-center gap-2">
+        <span className="font-medium">{v.meaning}</span>
+        <span className="rounded-full bg-soft px-2 py-0.5 text-xs text-primary">{v.partOfSpeech}</span>
       </div>
-      <div className="mt-2 text-sm">
+      <div className="mt-3 rounded-xl bg-bg p-3 text-sm">
         <div>{v.example}</div>
-        <div className="text-slate-500">{v.translation}</div>
+        <div className="text-muted">{v.translation}</div>
       </div>
     </div>
   );

@@ -1,3 +1,5 @@
+import { SpeakerHigh } from "@phosphor-icons/react";
+
 // Web Speech API: giọng đọc tùy trình duyệt/hệ điều hành
 export function speak(text: string) {
   const u = new SpeechSynthesisUtterance(text);
@@ -15,9 +17,9 @@ export default function AudioButton({ text }: { text: string }) {
         e.stopPropagation();
         speak(text);
       }}
-      className="rounded-lg border border-slate-300 px-2 py-1 hover:bg-slate-100"
+      className="inline-flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-full border border-border bg-surface text-primary transition duration-150 hover:bg-soft active:scale-95"
     >
-      🔊
+      <SpeakerHigh size={22} weight="bold" />
     </button>
   );
 }

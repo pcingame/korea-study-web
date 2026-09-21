@@ -1,3 +1,4 @@
+import { ArrowLeft, ArrowRight, CheckCircle, XCircle } from "@phosphor-icons/react";
 import { useState } from "react";
 import FlashCard from "../components/FlashCard";
 import ProgressBar from "../components/ProgressBar";
@@ -18,25 +19,36 @@ export default function Flashcard() {
     update((x) => master(x, v.id, yes));
     go(1);
   };
-  const btn = "rounded-xl border border-slate-300 bg-white px-4 py-2 hover:bg-slate-100";
 
   return (
     <div className="mx-auto max-w-md">
-      <div className="mb-2 flex justify-between text-sm text-slate-500">
-        <span>{i + 1}/{vocab.length}</span>
-        <span>{p.masteredWords.includes(v.id) ? "✅ đã nhớ" : ""}</span>
+      <div className="mb-2 flex min-h-6 justify-between text-sm text-muted">
+        <span>
+          {i + 1}/{vocab.length}
+        </span>
+        {p.masteredWords.includes(v.id) && (
+          <span className="inline-flex items-center gap-1 text-ok">
+            <CheckCircle size={18} weight="fill" /> đã nhớ
+          </span>
+        )}
       </div>
       <ProgressBar value={i + 1} max={vocab.length} />
       <div className="mt-4">
         <FlashCard v={v} flipped={flipped} onFlip={() => setFlipped(!flipped)} />
       </div>
-      <div className="mt-4 flex justify-between">
-        <button className={btn} onClick={() => go(-1)}>← Trước</button>
-        <button className={btn} onClick={() => go(1)}>Sau →</button>
-      </div>
-      <div className="mt-3 flex justify-between">
-        <button className={btn} onClick={() => mark(false)}>❌ Chưa nhớ</button>
-        <button className={btn} onClick={() => mark(true)}>✅ Đã nhớ</button>
+      <div className="mt-4 grid grid-cols-2 gap-3">
+        <button className="btn" onClick={() => go(-1)}>
+          <ArrowLeft size={20} /> Trước
+        </button>
+        <button className="btn" onClick={() => go(1)}>
+          Sau <ArrowRight size={20} />
+        </button>
+        <button className="btn" onClick={() => mark(false)}>
+          <XCircle size={20} className="text-bad" /> Chưa nhớ
+        </button>
+        <button className="btn btn-primary" onClick={() => mark(true)}>
+          <CheckCircle size={20} /> Đã nhớ
+        </button>
       </div>
     </div>
   );
