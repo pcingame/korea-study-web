@@ -18,13 +18,18 @@ const TYPES = {
   grammar: "Điền ngữ pháp",
   glisten: "Nghe → điền ngữ pháp",
   gmean: "Nghe câu → chọn nghĩa",
-  hread: "Hangul: chữ → cách đọc",
-  hlisten: "Hangul: nghe → chọn chữ",
-  hpatchim: "Patchim: nghe → âm cuối",
-  hword: "Hangul: nghe âm → chọn từ",
+  hread: "Nhìn chữ cái → chọn cách đọc",
+  hlisten: "Nghe âm → chọn chữ cái",
+  hpatchim: "Nghe từ → chọn âm cuối (patchim)",
+  hword: "Nghe âm → chọn từ",
 } as const;
 type Type = keyof typeof TYPES;
 type GrammarType = "grammar" | "glisten" | "gmean";
+const GROUPS: [string, Type[]][] = [
+  ["Từ vựng", ["ko-vi", "vi-ko", "listen", "fill"]],
+  ["Ngữ pháp", ["grammar", "glisten", "gmean"]],
+  ["Hangul và phát âm", ["hlisten", "hread", "hpatchim", "hword"]],
+];
 type LetterType = "hread" | "hlisten" | "hpatchim";
 type HangulType = LetterType | "hword";
 type VocabType = Exclude<Type, GrammarType | HangulType>;
@@ -168,13 +173,18 @@ export default function Quiz() {
     return (
       <div>
         <h1 className="mb-4 font-display text-3xl font-extrabold">Quiz</h1>
-        <div className="grid gap-2 sm:grid-cols-2">
-          {(Object.keys(TYPES) as Type[]).map((t) => (
-            <button key={t} onClick={() => start(t)} className="card cursor-pointer p-4 text-left font-medium transition duration-150 hover:bg-soft active:scale-95">
-              {TYPES[t]}
-            </button>
-          ))}
-        </div>
+        {GROUPS.map(([title, types]) => (
+          <section key={title} className="mb-6">
+            <h2 className="mb-2 font-bold text-muted">{title}</h2>
+            <div className="grid gap-2 sm:grid-cols-2">
+              {types.map((t) => (
+                <button key={t} onClick={() => start(t)} className="card cursor-pointer p-4 text-left font-medium transition duration-150 hover:bg-soft active:scale-95">
+                  {TYPES[t]}
+                </button>
+              ))}
+            </div>
+          </section>
+        ))}
       </div>
     );
 

@@ -4,20 +4,35 @@ import { speak } from "../components/AudioButton";
 import hangul from "../data/hangul.json";
 import { stagger } from "../utils/motion";
 
+const EXERCISES = [
+  { type: "hlisten", title: "Nghe âm → chọn chữ", desc: "Nghe một âm, chọn đúng chữ cái" },
+  { type: "hread", title: "Nhìn chữ → chọn cách đọc", desc: "Thấy chữ cái, chọn cách đọc" },
+  { type: "hpatchim", title: "Nghe từ → chọn âm cuối", desc: "Nhận biết patchim (phụ âm cuối)" },
+  { type: "hword", title: "Nghe âm → chọn từ", desc: "Phân biệt các từ có âm gần giống" },
+];
+
 export default function Hangul() {
   return (
     <div>
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <h1 className="font-display text-3xl font-extrabold">Bảng chữ cái Hangul</h1>
         <div className="flex flex-wrap gap-2">
-          <Link to="/quiz?type=hread" className="btn btn-primary">
-            Bài tập chọn đáp án
-          </Link>
           <Link to="/pronunciation" className="btn">
             <Microphone size={20} weight="fill" /> Luyện phát âm
           </Link>
         </div>
       </div>
+      <section className="mb-8">
+        <h2 className="mb-2 font-bold text-muted">Bài tập chọn đáp án</h2>
+        <div className="grid gap-2 sm:grid-cols-2">
+          {EXERCISES.map((e, n) => (
+            <Link key={e.type} to={`/quiz?type=${e.type}`} style={stagger(n)} className="card enter block p-4 transition duration-150 hover:bg-soft active:scale-95">
+              <div className="font-bold text-primary">{e.title}</div>
+              <div className="text-sm text-muted">{e.desc}</div>
+            </Link>
+          ))}
+        </div>
+      </section>
       {hangul.map((g) => (
         <section key={g.title} className="mb-6">
           <h2 className="mb-2 font-bold text-muted">{g.title}</h2>
