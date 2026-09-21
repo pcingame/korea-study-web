@@ -14,6 +14,7 @@ export default function VocabularyCard({ v, index = 0 }: { v: Vocab; index?: num
       </div>
       <div className="mt-2 flex flex-wrap items-center gap-2">
         <span className="font-medium">{v.meaning}</span>
+        {v.unit && <span className="rounded-full border border-primary/40 px-2 py-0.5 text-xs text-primary">Bài {v.unit}</span>}
         <span className="rounded-full bg-soft px-2 py-0.5 text-xs text-primary">{v.partOfSpeech}</span>
       </div>
       <div className="mt-3 rounded-xl bg-bg p-3 text-sm">

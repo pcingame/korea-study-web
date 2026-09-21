@@ -43,7 +43,10 @@ export default function App() {
         aria-label="Chính"
         className="fixed inset-x-0 bottom-0 z-10 grid grid-cols-5 border-t border-border bg-surface px-1 pb-[env(safe-area-inset-bottom)] md:sticky md:top-0 md:flex md:h-dvh md:w-56 md:shrink-0 md:flex-col md:gap-1 md:border-r md:border-t-0 md:p-3"
       >
-        <div className="hidden p-2 pb-4 font-display text-xl font-extrabold text-primary md:block">Korean Study</div>
+        <div className="hidden items-center gap-2 p-2 pb-4 md:flex">
+          <span className="flex size-9 items-center justify-center rounded-xl bg-primary font-display text-lg font-extrabold text-on-primary">한</span>
+          <span className="font-display text-lg font-extrabold">Korean Study</span>
+        </div>
         {NAV.map(({ to, Icon, text, mobile }) => (
           <NavLink
             key={to}

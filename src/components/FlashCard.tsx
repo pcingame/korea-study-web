@@ -9,8 +9,12 @@ export default function FlashCard({ v, flipped, onFlip }: { v: Vocab; flipped: b
       aria-label={flipped ? "Ẩn nghĩa" : "Xem nghĩa"}
       onClick={onFlip}
       onKeyDown={(e) => (e.key === " " || e.key === "Enter") && (e.preventDefault(), onFlip())}
-      className="card enter flex min-h-72 cursor-pointer select-none flex-col items-center justify-center gap-2 p-6 text-center transition duration-150 active:scale-[0.98]"
+      className="card card-soft enter flex min-h-72 cursor-pointer select-none flex-col items-center justify-center gap-2 p-6 text-center transition duration-150 active:scale-[0.98]"
     >
+      <div className="mb-2 flex gap-2 text-xs">
+        {v.unit && <span className="rounded-full bg-soft px-2 py-0.5 text-primary">Bài {v.unit}</span>}
+        <span className="rounded-full border border-border px-2 py-0.5 text-muted">{v.partOfSpeech}</span>
+      </div>
       <div className="font-display text-6xl font-extrabold">{v.word}</div>
       <div className="text-muted">{v.reading}</div>
       {flipped ? (

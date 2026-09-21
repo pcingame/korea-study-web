@@ -1,4 +1,5 @@
-import { Trophy } from "@phosphor-icons/react";
+import { Ear, Headphones, Keyboard, PencilLine, PencilSimple, SpeakerHigh, TextAa, Translate, Trophy, Waveform } from "@phosphor-icons/react";
+import type { Icon } from "@phosphor-icons/react";
 import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import ProgressBar from "../components/ProgressBar";
@@ -10,6 +11,7 @@ import hangul from "../data/hangul.json";
 import vocab from "../data/vocabulary.json";
 import type { Question, Vocab } from "../types";
 import { quizResult, useProgress } from "../utils/progress";
+import { stagger } from "../utils/motion";
 import { shuffle } from "../utils/shuffle";
 import { inUnit, useUnit, type Unit } from "../utils/unit";
 
@@ -30,11 +32,27 @@ const TYPES = {
 } as const;
 type Type = keyof typeof TYPES;
 type GrammarType = "grammar" | "glisten" | "gmean";
-const GROUPS: [string, Type[]][] = [
-  ["Từ vựng", ["ko-vi", "vi-ko", "listen", "fill", "vtype", "ltype"]],
-  ["Ngữ pháp", ["grammar", "glisten", "gmean"]],
-  ["Hangul và phát âm", ["hlisten", "hread", "hpatchim", "hword"]],
+const GROUPS: [string, Type[], string][] = [
+  ["Từ vựng", ["ko-vi", "vi-ko", "listen", "fill", "vtype", "ltype"], "tone-indigo"],
+  ["Ngữ pháp", ["grammar", "glisten", "gmean"], "tone-rose"],
+  ["Hangul và phát âm", ["hlisten", "hread", "hpatchim", "hword"], "tone-green"],
 ];
+// biểu tượng và mô tả ngắn cho từng dạng bài ở menu
+const INFO: Record<Type, [Icon, string]> = {
+  "ko-vi": [Translate, "Thấy từ Hàn, chọn nghĩa"],
+  "vi-ko": [Translate, "Thấy nghĩa, chọn từ Hàn"],
+  listen: [Headphones, "Nghe, chọn từ đúng"],
+  fill: [PencilSimple, "Điền từ vào câu ví dụ"],
+  vtype: [Keyboard, "Đọc nghĩa, tự gõ chữ Hàn"],
+  ltype: [Keyboard, "Nghe, gõ lại từ"],
+  grammar: [PencilLine, "Chọn trợ từ hoặc đuôi câu"],
+  glisten: [Headphones, "Nghe câu, chọn phần còn thiếu"],
+  gmean: [SpeakerHigh, "Nghe câu, chọn nghĩa"],
+  hread: [TextAa, "Thấy chữ cái, chọn cách đọc"],
+  hlisten: [Ear, "Nghe âm, chọn chữ cái"],
+  hpatchim: [Waveform, "Nghe từ, chọn âm cuối"],
+  hword: [Headphones, "Phân biệt các từ có âm gần nhau"],
+};
 type LetterType = "hread" | "hlisten" | "hpatchim";
 type HangulType = LetterType | "hword";
 type VocabType = Exclude<Type, GrammarType | HangulType>;
@@ -205,15 +223,29 @@ export default function Quiz() {
         <h1 className="mb-4 font-display text-3xl font-extrabold">Quiz</h1>
         <UnitFilter value={unit} onChange={setUnit} />
         <p className="-mt-2 mb-4 text-xs text-muted">Bộ lọc bài áp dụng cho bài tập từ vựng và ngữ pháp. Bài tập Hangul dùng chung toàn bộ.</p>
-        {GROUPS.map(([title, types]) => (
+        {GROUPS.map(([title, types, tone]) => (
           <section key={title} className="mb-6">
             <h2 className="mb-2 font-bold text-muted">{title}</h2>
             <div className="grid gap-2 sm:grid-cols-2">
-              {types.map((t) => (
-                <button key={t} onClick={() => start(t)} className="card cursor-pointer p-4 text-left font-medium transition duration-150 hover:bg-soft active:scale-95">
-                  {TYPES[t]}
-                </button>
-              ))}
+              {types.map((t, n) => {
+                const [Icon, desc] = INFO[t];
+                return (
+                  <button
+                    key={t}
+                    onClick={() => start(t)}
+                    style={stagger(n)}
+                    className="card enter flex cursor-pointer items-center gap-3 p-3 text-left transition duration-150 hover:-translate-y-0.5 hover:shadow-md active:scale-95"
+                  >
+                    <span className={`flex size-11 shrink-0 items-center justify-center rounded-xl ${tone}`}>
+                      <Icon size={24} weight="duotone" />
+                    </span>
+                    <span>
+                      <span className="block font-bold">{TYPES[t]}</span>
+                      <span className="text-sm text-muted">{desc}</span>
+                    </span>
+                  </button>
+                );
+              })}
             </div>
           </section>
         ))}

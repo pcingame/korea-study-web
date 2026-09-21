@@ -34,9 +34,9 @@ export default function Vocabulary() {
           className="min-h-11 w-full rounded-xl border border-border bg-surface py-2 pl-10 pr-3 text-base placeholder:text-muted"
         />
       </label>
-      <div className="mb-4 flex flex-wrap gap-2" role="group" aria-label="Lọc theo từ loại">
+      <div className="-mx-4 mb-4 flex gap-2 overflow-x-auto px-4 pb-1 md:mx-0 md:flex-wrap md:overflow-visible md:px-0" role="group" aria-label="Lọc theo từ loại">
         {["", ...POS].map((p) => (
-          <button key={p} onClick={() => setPos(p)} aria-pressed={pos === p} className={`btn min-h-11 text-sm ${pos === p ? "btn-primary" : ""}`}>
+          <button key={p} onClick={() => setPos(p)} aria-pressed={pos === p} className={`btn min-h-11 shrink-0 text-sm md:min-h-9 ${pos === p ? "btn-primary" : ""}`}>
             {p || "Tất cả"}
           </button>
         ))}

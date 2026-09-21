@@ -1,5 +1,6 @@
 import { Flame } from "@phosphor-icons/react";
 import ProgressBar from "../components/ProgressBar";
+import UnitProgress from "../components/UnitProgress";
 import vocab from "../data/vocabulary.json";
 import { currentStreak, useProgress } from "../utils/progress";
 
@@ -34,6 +35,9 @@ export default function Progress() {
             <Flame size={22} weight="fill" /> {currentStreak(p)} ngày
           </b>
         </div>
+      </div>
+      <div className="mt-4">
+        <UnitProgress />
       </div>
     </div>
   );

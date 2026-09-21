@@ -25,7 +25,10 @@ export default function Grammar() {
       <div className="grid gap-3 md:grid-cols-2">
         {list.map((g, n) => (
           <div key={g.id} className="card enter p-4" style={stagger(n)}>
-            <div className="font-display text-xl font-extrabold text-primary">{g.title}</div>
+            <div className="flex items-start justify-between gap-2">
+              <div className="font-display text-xl font-extrabold text-primary">{g.title}</div>
+              {g.unit && <span className="shrink-0 rounded-full bg-soft px-2 py-0.5 text-xs text-primary">Bài {g.unit}</span>}
+            </div>
             <div className="mb-3 text-muted">{g.explanation}</div>
             {g.examples.map((e) => (
               <div key={e.korean} className="mt-2 flex items-center gap-3 rounded-xl bg-bg p-2">

@@ -14,6 +14,11 @@
   --ok-bg: #dcfce7;
   --bad: #b91c1c;
   --bad-bg: #fee2e2;
+  /* màu nhấn cho biểu tượng: nền + chữ */
+  --t-indigo: #e0e7ff; --t-indigo-fg: #4338ca;
+  --t-green: #dcfce7; --t-green-fg: #15803d;
+  --t-amber: #fef3c7; --t-amber-fg: #b45309;
+  --t-rose: #ffe4e6; --t-rose-fg: #be123c;
 }
 @media (prefers-color-scheme: dark) {
   :root {
@@ -29,6 +34,10 @@
     --ok-bg: #14532d;
     --bad: #fca5a5;
     --bad-bg: #7f1d1d;
+    --t-indigo: #2a2c55; --t-indigo-fg: #a5b4fc;
+    --t-green: #14532d; --t-green-fg: #86efac;
+    --t-amber: #78350f; --t-amber-fg: #fcd34d;
+    --t-rose: #881337; --t-rose-fg: #fda4af;
   }
 }
 
@@ -53,6 +62,8 @@
 @layer base {
   body {
     @apply bg-bg font-sans text-fg antialiased;
+    background-image: radial-gradient(60rem 26rem at 85% -8%, color-mix(in srgb, var(--primary) 14%, transparent), transparent);
+    background-attachment: fixed;
   }
   :focus-visible {
     outline: 2px solid var(--primary);
@@ -67,6 +78,15 @@
   .btn {
     @apply inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-xl border border-border bg-surface px-4 font-medium transition duration-150 hover:bg-soft active:scale-95;
   }
+  .tone-indigo { background: var(--t-indigo); color: var(--t-indigo-fg); }
+  .tone-green { background: var(--t-green); color: var(--t-green-fg); }
+  .tone-amber { background: var(--t-amber); color: var(--t-amber-fg); }
+  .tone-rose { background: var(--t-rose); color: var(--t-rose-fg); }
+  /* thẻ nổi bật ở Trang chủ: luôn nền tím đậm + chữ trắng, đạt tương phản ở cả hai chế độ */
+  .hero { background: linear-gradient(135deg, #4338ca, #7c3aed); color: #fff; border-radius: 1.5rem; box-shadow: 0 10px 30px -12px #4338ca99; }
+  .chip-hero { @apply inline-flex items-center gap-1 rounded-full px-3 py-1; background: rgb(255 255 255 / 0.2); }
+  .btn-light { @apply border-transparent bg-white font-bold hover:bg-white; color: #4338ca; }
+  .card-soft { background-image: linear-gradient(180deg, var(--surface), color-mix(in srgb, var(--soft) 55%, var(--surface))); }
   .btn-primary {
     @apply border-transparent bg-primary text-on-primary hover:bg-primary hover:opacity-90;
   }
