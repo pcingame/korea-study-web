@@ -1,9 +1,10 @@
 import type { Vocab } from "../types";
+import { stagger } from "../utils/motion";
 import AudioButton from "./AudioButton";
 
-export default function VocabularyCard({ v }: { v: Vocab }) {
+export default function VocabularyCard({ v, index = 0 }: { v: Vocab; index?: number }) {
   return (
-    <div className="card p-4">
+    <div className="card enter p-4" style={stagger(index)}>
       <div className="flex items-start justify-between gap-2">
         <div>
           <div className="font-display text-3xl font-extrabold">{v.word}</div>

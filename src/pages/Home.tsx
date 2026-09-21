@@ -2,6 +2,7 @@ import { BookOpenText, Books, Cards, Exam, Flame, Microphone, TextAa } from "@ph
 import { Link } from "react-router-dom";
 import ProgressBar from "../components/ProgressBar";
 import vocab from "../data/vocabulary.json";
+import { stagger } from "../utils/motion";
 import { currentStreak, useProgress } from "../utils/progress";
 
 const TILES = [
@@ -31,8 +32,8 @@ export default function Home() {
         <ProgressBar value={p.masteredWords.length} max={vocab.length} />
       </Link>
       <div className="grid grid-cols-2 gap-3">
-        {TILES.map(({ to, Icon, text }) => (
-          <Link key={to} to={to} className="card flex flex-col items-center gap-3 p-6 text-center font-medium transition duration-150 hover:bg-soft active:scale-95">
+        {TILES.map(({ to, Icon, text }, n) => (
+          <Link key={to} to={to} style={stagger(n)} className="card enter flex flex-col items-center gap-3 p-6 text-center font-medium transition duration-150 hover:bg-soft active:scale-95">
             <span className="flex size-14 items-center justify-center rounded-full bg-soft text-primary">
               <Icon size={30} weight="duotone" />
             </span>

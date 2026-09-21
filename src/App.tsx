@@ -1,5 +1,6 @@
 import { BookOpenText, Books, Cards, ChartBar, Exam, House, Microphone, TextAa } from "@phosphor-icons/react";
-import { NavLink, Route, Routes } from "react-router-dom";
+import { useEffect, useRef } from "react";
+import { NavLink, Route, Routes, useLocation } from "react-router-dom";
 import Flashcard from "./pages/Flashcard";
 import Grammar from "./pages/Grammar";
 import Hangul from "./pages/Hangul";
@@ -22,6 +23,17 @@ const NAV = [
 ];
 
 export default function App() {
+  const { pathname } = useLocation();
+  const main = useRef<HTMLElement>(null);
+  const first = useRef(true);
+
+  // Đổi trang: cuộn lên đầu và đưa focus vào nội dung (hỗ trợ bàn phím/trình đọc màn hình)
+  useEffect(() => {
+    if (first.current) return void (first.current = false);
+    window.scrollTo(0, 0);
+    main.current?.focus({ preventScroll: true });
+  }, [pathname]);
+
   return (
     <div className="min-h-dvh md:flex">
       <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:m-2 focus:rounded-lg focus:bg-primary focus:p-2 focus:text-on-primary">
@@ -52,7 +64,8 @@ export default function App() {
           </NavLink>
         ))}
       </nav>
-      <main id="main" className="mx-auto w-full max-w-4xl flex-1 p-4 pb-24 md:p-8">
+      <main id="main" ref={main} tabIndex={-1} className="mx-auto w-full max-w-4xl flex-1 p-4 pb-24 outline-none md:p-8">
+        <div key={pathname} className="enter">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/hangul" element={<Hangul />} />
@@ -63,6 +76,7 @@ export default function App() {
           <Route path="/pronunciation" element={<Pronunciation />} />
           <Route path="/progress" element={<Progress />} />
         </Routes>
+        </div>
       </main>
     </div>
   );

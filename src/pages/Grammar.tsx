@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import AudioButton from "../components/AudioButton";
 import grammar from "../data/grammar.json";
+import { stagger } from "../utils/motion";
 
 export default function Grammar() {
   return (
@@ -17,8 +18,8 @@ export default function Grammar() {
         </div>
       </div>
       <div className="grid gap-3 md:grid-cols-2">
-        {grammar.map((g) => (
-          <div key={g.id} className="card p-4">
+        {grammar.map((g, n) => (
+          <div key={g.id} className="card enter p-4" style={stagger(n)}>
             <div className="font-display text-xl font-extrabold text-primary">{g.title}</div>
             <div className="mb-3 text-muted">{g.explanation}</div>
             {g.examples.map((e) => (

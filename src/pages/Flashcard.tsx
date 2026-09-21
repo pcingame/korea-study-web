@@ -1,5 +1,5 @@
 import { ArrowLeft, ArrowRight, CheckCircle, XCircle } from "@phosphor-icons/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import FlashCard from "../components/FlashCard";
 import ProgressBar from "../components/ProgressBar";
 import vocab from "../data/vocabulary.json";
@@ -20,6 +20,20 @@ export default function Flashcard() {
     go(1);
   };
 
+  // Phím tắt: ←/→ chuyển thẻ, Space lật thẻ (bỏ qua khi đang focus vào nút để không lật hai lần)
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "ArrowRight") go(1);
+      else if (e.key === "ArrowLeft") go(-1);
+      else if (e.key === " " && !(e.target as HTMLElement).closest("button,[role=button],input,a")) {
+        e.preventDefault();
+        setFlipped((f) => !f);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  });
+
   return (
     <div className="mx-auto max-w-md">
       <div className="mb-2 flex min-h-6 justify-between text-sm text-muted">
@@ -34,7 +48,7 @@ export default function Flashcard() {
       </div>
       <ProgressBar value={i + 1} max={vocab.length} />
       <div className="mt-4">
-        <FlashCard v={v} flipped={flipped} onFlip={() => setFlipped(!flipped)} />
+        <FlashCard key={v.id} v={v} flipped={flipped} onFlip={() => setFlipped(!flipped)} />
       </div>
       <div className="mt-4 grid grid-cols-2 gap-3">
         <button className="btn" onClick={() => go(-1)}>
@@ -50,6 +64,7 @@ export default function Flashcard() {
           <CheckCircle size={20} /> Đã nhớ
         </button>
       </div>
+      <p className="mt-4 hidden text-center text-xs text-muted md:block">Phím ← → để chuyển thẻ, Space để lật thẻ</p>
     </div>
   );
 }

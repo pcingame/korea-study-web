@@ -100,19 +100,19 @@ export default function Pronunciation() {
         <div className="font-display text-5xl font-extrabold">{target.text}</div>
         <div className="text-muted">{target.hint}</div>
         <AudioButton text={target.text} />
-        <button onClick={listen} disabled={status === "listening"} className="btn btn-primary mt-2 min-h-14 px-6 text-lg disabled:opacity-60">
+        <button onClick={listen} disabled={status === "listening"} className={`btn btn-primary mt-2 min-h-14 px-6 text-lg disabled:opacity-60 ${status === "listening" ? "animate-pulse" : ""}`}>
           <Microphone size={26} weight="fill" />
           {status === "listening" ? "Đang nghe…" : "Bấm rồi đọc"}
         </button>
         <div aria-live="polite" className="min-h-12">
           {status === "ok" && (
-            <div className="inline-flex items-center gap-1 font-bold text-ok">
+            <div className="pop inline-flex items-center gap-1 font-bold text-ok">
               <CheckCircle size={22} weight="fill" /> Chính xác!
             </div>
           )}
           {status === "bad" && (
             <div>
-              <div className="inline-flex items-center gap-1 font-bold text-bad">
+              <div className="shake inline-flex items-center gap-1 font-bold text-bad">
                 <XCircle size={22} weight="fill" /> Chưa khớp
               </div>
               <div className="text-sm text-muted">Máy nghe được: {heard[0] || "—"}</div>

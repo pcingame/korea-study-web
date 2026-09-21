@@ -1,6 +1,7 @@
 import { Trophy } from "@phosphor-icons/react";
 import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
+import ProgressBar from "../components/ProgressBar";
 import QuizQuestion from "../components/QuizQuestion";
 import exercises from "../data/grammar-exercises.json";
 import hangul from "../data/hangul.json";
@@ -20,10 +21,12 @@ const TYPES = {
   hread: "Hangul: chữ → cách đọc",
   hlisten: "Hangul: nghe → chọn chữ",
   hpatchim: "Patchim: nghe → âm cuối",
+  hword: "Hangul: nghe âm → chọn từ",
 } as const;
 type Type = keyof typeof TYPES;
 type GrammarType = "grammar" | "glisten" | "gmean";
-type HangulType = "hread" | "hlisten" | "hpatchim";
+type LetterType = "hread" | "hlisten" | "hpatchim";
+type HangulType = LetterType | "hword";
 type VocabType = Exclude<Type, GrammarType | HangulType>;
 const isGrammar = (t: Type): t is GrammarType => t === "grammar" || t === "glisten" || t === "gmean";
 const N = 10;
@@ -68,7 +71,7 @@ function makeGrammar(type: GrammarType, e: Ex): Question {
   };
 }
 
-const isHangul = (t: Type): t is HangulType => t === "hread" || t === "hlisten" || t === "hpatchim";
+const isHangul = (t: Type): t is HangulType => t === "hread" || t === "hlisten" || t === "hpatchim" || t === "hword";
 
 type HItem = (typeof hangul)[number]["items"][number];
 const patchim = hangul.find((g) => g.title.startsWith("Patchim"))!.items;
@@ -79,7 +82,7 @@ const sound = (x: HItem) => x.r.split(" · ")[0]; // patchim: "k · 책 sách" �
 const listenable = letters.filter((g) => g.title !== "Nguyên âm ghép");
 
 // items = nhóm chứa chữ đó, dùng để lấy đáp án nhiễu cùng loại
-function makeHangul(type: HangulType, it: HItem, items: HItem[]): Question {
+function makeHangul(type: LetterType, it: HItem, items: HItem[]): Question {
   const opts = shuffle([it, ...shuffle(items.filter((x) => x !== it)).slice(0, 3)]);
   if (type === "hpatchim")
     return {
@@ -94,8 +97,39 @@ function makeHangul(type: HangulType, it: HItem, items: HItem[]): Question {
   return { prompt: `Chữ "${it.c}" đọc là gì?`, options: opts.map((x) => x.r), answer: it.r, note: `${it.c} = ${it.say} (${it.r}).` };
 }
 
+// Bài "nghe âm → chọn từ": đáp án nhiễu là các từ có nét chữ (jamo) gần giống nhất, để luyện phân biệt âm
+const jamo = (w: string) => [...w.normalize("NFD")];
+function distance(a: string[], b: string[]) {
+  let prev = Array.from({ length: b.length + 1 }, (_, j) => j);
+  for (let i = 1; i <= a.length; i++) {
+    const cur = [i];
+    for (let j = 1; j <= b.length; j++) cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+    prev = cur;
+  }
+  return prev[b.length];
+}
+const singleWords = vocab.filter((v) => !v.word.includes(" "));
+
+function makeWord(v: Vocab): Question {
+  const a = jamo(v.word);
+  const near = shuffle(singleWords.filter((x) => x.id !== v.id))
+    .map((x) => ({ word: x.word, d: distance(a, jamo(x.word)) }))
+    .sort((p, q) => p.d - q.d)
+    .slice(0, 3)
+    .map((x) => x.word);
+  return {
+    prompt: "Nghe và chọn từ đúng (các đáp án có âm gần giống nhau)",
+    audio: v.word,
+    options: shuffle([v.word, ...near]),
+    answer: v.word,
+    note: `${v.word} (${v.reading}) = ${v.meaning}`,
+  };
+}
+
 const build = (type: Type): Question[] =>
-  isHangul(type)
+  type === "hword"
+    ? shuffle(singleWords).slice(0, N).map(makeWord)
+    : isHangul(type)
     ? shuffle(
         type === "hpatchim"
           ? patchim.map((it) => ({ it, items: patchim }))
@@ -147,7 +181,7 @@ export default function Quiz() {
   if (n >= qs.length)
     return (
       <div className="flex flex-col items-center gap-2 text-center">
-        <Trophy size={64} weight="duotone" className="text-primary" />
+        <Trophy size={64} weight="duotone" className="pop text-primary" />
         <div className="font-display text-3xl font-extrabold">
           Kết quả: {score}/{qs.length}
         </div>
@@ -161,6 +195,9 @@ export default function Quiz() {
     <div className="mx-auto max-w-md">
       <div className="mb-2 text-sm text-muted">
         Câu {n + 1}/{qs.length}
+      </div>
+      <div className="mb-4">
+        <ProgressBar value={n} max={qs.length} />
       </div>
       <QuizQuestion key={n} q={qs[n]} onNext={next} />
     </div>
